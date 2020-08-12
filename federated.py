@@ -12,7 +12,6 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import KBinsDiscretizer
 from sklearn.svm import SVC, LinearSVC
 from sklearn.ensemble import GradientBoostingClassifier
-#from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
 from sklearn import mixture
 from sklearn.cluster import KMeans
@@ -45,7 +44,7 @@ class my_LogisticRegression:
         if self.fit_intercept:
             X = self.__add_intercept(X)
     
-        self.theta = theta #np.zeros(X.shape[1])
+        self.theta = theta
         ind = np.where(self.theta == 0)[0]
     
         for i in range(self.num_iter):
@@ -78,11 +77,6 @@ def Our_Discretize(n_est, X_all, y_all):
      
     X = X_all
     X_test = X_all
-    #y = y_train
-    #X, X_test, y, y_test = train_test_split(X_all, y_all, test_size=0.2)
-    
-    #X_all = np.concatenate((X_train, X_test), axis=0)
-    #y_all = np.concatenate((y_train, y_test), axis=0)
     
     clfGB = GradientBoostingClassifier(n_estimators=n_est, max_depth=1)
     clfGB.fit(X_all,y_all)
@@ -139,57 +133,10 @@ def Our_Discretize(n_est, X_all, y_all):
             data_discr_test = np.concatenate((data_discr_test, dummy_test), axis=1)
     used_n_est = len(D)
 
-    #T = 15*used_n_est
-    #my_clf = my_LogisticRegression(lr=0.1, num_iter=2)
-    #for t in range(T):
-    #    e = random.sample(D,1)
-    #    feature, thres = e[0]
-    #    tmp = X[:,feature] > thres
-    #    dummy = pandas.get_dummies(tmp)
-    #    if (dummy.shape[1] == 1) and (dummy.iloc[1]==1).bool():
-    #        dummy = np.concatenate((dummy, 1-dummy), axis=1)
-    #    if (dummy.shape[1] == 1) and (dummy.iloc[1]==0).bool():
-    #        dummy = np.concatenate((dummy, 1+dummy), axis=1)
-    #         #print(dummy.shape)
-    #    data_discr = np.concatenate((data_discr, dummy), axis=1)
-
-    #    tmp_test = X_test[:,feature] > thres
-    #    dummy_test = pandas.get_dummies(tmp_test)
-    #    if (dummy_test.shape[1] == 1) and (dummy_test.iloc[1]==1).bool():
-    #        dummy_test = np.concatenate((dummy_test, 1-dummy_test), axis=1)
-    #    if (dummy_test.shape[1] == 1) and (dummy_test.iloc[1]==0).bool():
-    #        dummy_test = np.concatenate((dummy_test, 1+dummy_test), axis=1)
-    #    data_discr_test = np.concatenate((data_discr_test, dummy_test), axis=1)
-
-    #    if t==0:
-    #        theta= np.zeros(data_discr.shape[1])
-    #        my_clf.fit(data_discr,y,theta,weights)
-    #    if t > 0:
-    #        theta_warm = np.zeros(data_discr.shape[1])
-    #        theta_warm[0:2*used_n_est+2*t] = my_clf.theta
-    #        theta = theta_warm
-    #        my_clf.fit(data_discr,y,theta,weights)
-                 
-    #    preds = my_clf.predict(data_discr_test)
-    #    #acc_OurGB_test[iMC,iNEst] = ((preds == y_test).mean())
-             
-    #    preds = my_clf.predict(data_discr)
-    #    #acc_OurGB_train[iMC,iNEst] = ((preds == y).mean())
-
     return [data_discr,data_discr_test]
 
 NMC = 50
 NEstimators = [1, 3, 7, 10, 20, 50, 100, 1000]
-#NEstimators =  [1, 5, 10, 25, 50, 75, 100, 500, 1000, 5000, 7000, 10000, 15000, 30000, 50000]
-#NEstimators = [5, 10]
-
-#acc_GB_train = np.zeros((NMC,len(NEstimators)))
-#acc_OurGB_train = np.zeros((NMC,len(NEstimators)))
-#acc_LR_train = np.zeros((NMC,len(NEstimators)))
-
-#acc_GB_test = np.zeros((NMC,len(NEstimators)))
-#acc_OurGB_test = np.zeros((NMC,len(NEstimators)))
-#cc_LR_test = np.zeros((NMC,len(NEstimators)))
 
 acc_OurGB_test_1_2 = np.zeros((NMC,len(NEstimators)))
 acc_OurGB_test_1_3 = np.zeros((NMC,len(NEstimators)))
@@ -205,23 +152,16 @@ acc_OurGB_test_3 = np.zeros((NMC,len(NEstimators)))
 
 NPerBlob = 25
 
-#centers1 = [[1, 1], [2, 0], [1, -1]]
-#centers2 = [[-1, 1], [-1, -1], [-2, 0]]
 centers1 = [[1, 1],[-1, 1]]
 centers2 = [[2, 0],[-1, -1]]
 centers3 = [[1, -1],[-2, 0]]
 
 for iMC in range(NMC):
     
-    #X_all1, y_all1 = make_blobs(n_samples=50, n_features=30, cluster_std=1.5, centers=centers1,shuffle=False)
     
     X_all1, y_all1 = make_blobs(n_samples=50, n_features=100, cluster_std=5, centers=2,shuffle=False)
     
-    #X_all2, y_all2 = make_blobs(n_samples=50, n_features=30, cluster_std=1.5, centers=centers2,shuffle=False)
-    
     X_all2, y_all2 = make_blobs(n_samples=50, n_features=100, cluster_std=5, centers=2,shuffle=False)
-    
-    #X_all3, y_all3 = make_blobs(n_samples=50, n_features=30, cluster_std=1.5, centers=centers3,shuffle=False)
 
     X_all3, y_all3 = make_blobs(n_samples=50, n_features=100, cluster_std=5, centers=2,shuffle=False)
 
@@ -237,10 +177,6 @@ for iMC in range(NMC):
     # train on 3, test on 1, 2
     
     # Federate
-    
-    
-    #print(X_all.shape)
-    #print(y_all.shape)
     for iNEst in range(len(NEstimators)):
     
         n_est = NEstimators[iNEst]
@@ -250,8 +186,6 @@ for iMC in range(NMC):
         # train on 1
         my_clf = my_LogisticRegression(lr=0.1, num_iter=20)
         theta= np.zeros(data_discr.shape[1])
-        #print(data_discr.shape)
-        #print(data_discr.iloc[0:50,:].shape)
         my_clf.fit(data_discr[0:50],y_all1,theta)
         theta1 = my_clf.theta
         preds = my_clf.predict(data_discr_test[50:100])
@@ -301,8 +235,6 @@ for iMC in range(NMC):
         for j in range(X_all3.shape[0]):
             weights3[j] = (np.sum(pred_3[j] == pred_3))
         weights3 = weights3/np.sum(weights3)
-
-        #theta = (theta1*weights2/weights1 + theta1*weight3/weights1 + theta2*weight1/weights2 + theta2*weight3/weights2+theta3*weights2/weights3 + theta3*weight1/weights3)/6
         
         theta = (theta1 + theta2 + theta3)/3
         
@@ -314,46 +246,11 @@ for iMC in range(NMC):
         
         preds = weighted_predict(data_discr_test[100:150], theta)
         acc_OurGB_test_3[iMC,iNEst] = ((preds == y_all3).mean())
-    
-    #clf_KMeans_train = KMeans(n_clusters=8).fit(X)
-    #clf_KMeans_test = KMeans(n_clusters=4).fit(X_test)
-    #pred_train = clf_KMeans_train.predict(X)
-    #pred_test = clf_KMeans_test.predict(X)
-     
-    #print(pred_train)
-    #weights_train = np.zeros((X.shape[0]))
-    #weights_test = np.zeros((X.shape[0]))
-    #for j in range(X.shape[0]):
-    #    weights_train[j] = (np.sum(pred_train[j] == pred_train))
-    #for j in range(X.shape[0]):
-    #    weights_test[j] = (np.sum(pred_train[j] == pred_train))
-    
-    #weights_train = weights_train/np.sum(weights_train)
-    #weights_test = weights_test/np.sum(weights_test)
-    
-    #weights = weights_test/weights_train
-
-        
-
+            
 # plot Accuracy
 fig=plt.figure()
 ax=fig.add_subplot(111)
                      
-#ax.errorbar(range(len(NEstimators)), acc_OurGB_test_1_3.mean(0), acc_OurGB_test_1_3.std(0), linestyle='--', c='b', marker='_',label='1->2')
-#ax.errorbar(range(len(NEstimators)), acc_OurGB_test_1_2.mean(0), acc_OurGB_test_1_2.std(0), linestyle='--', c='b', marker="D",label='1->2')
-
-#ax.errorbar(range(len(NEstimators)), acc_OurGB_test_2_1.mean(0), acc_OurGB_test_2_1.std(0), linestyle='--', c='g', marker='_',label='2->1')
-#ax.errorbar(range(len(NEstimators)), acc_OurGB_test_2_3.mean(0), acc_OurGB_test_2_3.std(0), linestyle='--', c='g', marker="D",label='2->3')
-
-#ax.errorbar(range(len(NEstimators)), acc_OurGB_test_3_1.mean(0), acc_OurGB_test_3_1.std(0), linestyle='--', c='r', marker='_',label='3->1')
-#ax.errorbar(range(len(NEstimators)), acc_OurGB_test_3_2.mean(0), acc_OurGB_test_3_2.std(0), linestyle='--', c='r', marker="D",label='3->2')
-
-#ax.errorbar(range(len(NEstimators)), acc_OurGB_test_1.mean(0), acc_OurGB_test_1.std(0), linestyle='--', c='m', marker='_',label='f->1')
-
-#ax.errorbar(range(len(NEstimators)), acc_OurGB_test_2.mean(0), acc_OurGB_test_2.std(0), linestyle='--', c='m', marker="D",label='f->2')
-
-#ax.errorbar(range(len(NEstimators)), acc_OurGB_test_3_1.mean(0), acc_OurGB_test_3_1.std(0), linestyle='--', c='m', marker="d",label='f->3')
-
 ax.errorbar(range(len(NEstimators)), ((acc_OurGB_test_1_3 + acc_OurGB_test_1_2)/2).mean(0), ((acc_OurGB_test_1_3 + acc_OurGB_test_1_2)/2).std(0), linestyle='--', c='g', marker='_',label='1->2,3')
 
 ax.errorbar(range(len(NEstimators)), ((acc_OurGB_test_2_1 + acc_OurGB_test_2_3)/2).mean(0), ((acc_OurGB_test_2_3 + acc_OurGB_test_2_1)/2).std(0), linestyle='--', c='b', marker='_',label='2->1,3')

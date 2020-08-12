@@ -12,7 +12,6 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import KBinsDiscretizer
 from sklearn.svm import SVC, LinearSVC
 from sklearn.ensemble import GradientBoostingClassifier
-#from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
 import seaborn as sns
 
@@ -48,7 +47,7 @@ class my_LogisticRegression:
         if self.fit_intercept:
             X = self.__add_intercept(X)
     
-        self.theta = theta #np.zeros(X.shape[1])
+        self.theta = theta
         ind = np.where(self.theta == 0)[0]
     
         for i in range(self.num_iter):
@@ -77,9 +76,7 @@ def do_expr(X_all, y_all, name, report_dict):
     start_time = time.time()
     print('Processing dataset: ' + name)
     NMC = 5
-    #NEstimators = [1, 2, 3, 5, 7, 10, 20, 50, 100]
     NEstimators =  [1, 5, 10, 25, 50, 75, 100, 500, 1000, 5000]
-    #NEstimators = [5, 10]
     
     acc_GB_train = np.zeros((NMC,len(NEstimators)))
     acc_light_train = np.zeros((NMC,len(NEstimators)))
@@ -96,23 +93,11 @@ def do_expr(X_all, y_all, name, report_dict):
     acc_LR_test = np.zeros((NMC,len(NEstimators)))
     
     for iMC in range(NMC):
-            
-        #ok
-        #X_all, y_all = make_classification(n_samples=100, n_features=30, n_redundant=0, n_informative=2, n_clusters_per_class=1,flip_y=0.1)
-        
-        #ok
-        #X_all, y_all = make_blobs(n_samples=100, n_features=50, cluster_std=10.0, centers=2)
-        
-        #X_all, y_all =  make_moons(n_samples=100, shuffle=True, noise=0.4, random_state=None)
-        
-        #X_all, y_all = make_classification(n_samples=500, n_features=200, n_redundant=30, n_informative=20, n_clusters_per_class=1,flip_y=0.3, shift = 0.)
-    
         X, X_test, y, y_test = train_test_split(X_all, y_all, test_size=0.3)
     
         for iNEst in range(len(NEstimators)):
     
             n_est = NEstimators[iNEst]
-            #print(n_est)
             
             clfGB = GradientBoostingClassifier(n_estimators=n_est, max_depth=1)
             clfGB1 = GradientBoostingClassifier(n_estimators=n_est, max_depth=1)
@@ -238,8 +223,6 @@ def do_expr(X_all, y_all, name, report_dict):
                     if (dummy_test.shape[1] == 1) and (dummy_test.iloc[1]==0).bool():
                         dummy_test = np.concatenate((dummy_test, 1+dummy_test), axis=1)
                     data_discr_test = np.concatenate((data_discr_test, dummy_test), axis=1)
-            #print(data_discr.shape[1])
-            #print(data_discr_test.shape[1])
             
             T = 50
             for t in range(0,T):
@@ -301,7 +284,7 @@ def do_expr(X_all, y_all, name, report_dict):
 
 
 use_multiprocessing = True
-db_path = 'Rudin'
+db_path = 'Data'
 db_cases = []
 for db_name in os.listdir(db_path):
     db_file = os.path.join(db_path, db_name)

@@ -12,7 +12,6 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import KBinsDiscretizer
 from sklearn.svm import SVC, LinearSVC
 from sklearn.ensemble import GradientBoostingClassifier
-#from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
 import seaborn as sns
 
@@ -46,7 +45,7 @@ class my_LogisticRegression:
         if self.fit_intercept:
             X = self.__add_intercept(X)
     
-        self.theta = theta #np.zeros(X.shape[1])
+        self.theta = theta
         ind = np.where(self.theta == 0)[0]
     
         for i in range(self.num_iter):
@@ -74,9 +73,7 @@ def do_expr(X_all, y_all, name, report_dict):
     start_time = time.time()
     print('Processing dataset: ' + name)
     NMC = 10
-    #NEstimators = [1, 2, 3, 5, 7, 10, 20, 50, 100]
     NEstimators =  [1, 5, 10, 25, 50, 75, 100]
-    #NEstimators = [5, 10]
     
     acc_GB_train = np.zeros((NMC,len(NEstimators)))
     acc_light_train = np.zeros((NMC,len(NEstimators)))
@@ -108,25 +105,6 @@ def do_expr(X_all, y_all, name, report_dict):
         #7 nobs = 500, nfeat = 10 , nclust =5
         #8 nobs = 500, nfeat = 100 , nclust =5
     
-        
-        #ok
-        #X_all, y_all = make_classification(n_samples=500, n_features=100, n_redundant=0, n_informative=10, n_clusters_per_class=1,flip_y=0.2)
-        
-        # 1
-        #X_all, y_all = make_classification(n_samples=100, n_features=100, n_redundant=0, n_informative=10, n_clusters_per_class=1,flip_y=0.2)
-        
-        # 2
-        #X_all, y_all = make_classification(n_samples=100, n_features=10, n_redundant=0, n_informative=10, n_clusters_per_class=1,flip_y=0.2)
-        
-        #X_all, y_all = make_classification(n_samples=500, n_features=10, n_redundant=0, n_informative=10, n_clusters_per_class=1,flip_y=0.2)
-        
-        #ok
-        #X_all, y_all = make_blobs(n_samples=100, n_features=50, cluster_std=10.0, centers=2)
-        
-        #X_all, y_all =  make_moons(n_samples=100, shuffle=True, noise=0.4, random_state=None)
-        
-        #X_all, y_all = make_classification(n_samples=500, n_features=200, n_redundant=30, n_informative=20, n_clusters_per_class=1,flip_y=0.3, shift = 0.)
-    
         X, X_test, y, y_test = train_test_split(X_all, y_all, test_size=0.3)
     
         for iNEst in range(len(NEstimators)):
@@ -134,7 +112,6 @@ def do_expr(X_all, y_all, name, report_dict):
             weights = {}
     
             n_est = NEstimators[iNEst]
-            #print(n_est)
             
             clfGB = GradientBoostingClassifier(n_estimators=n_est, max_depth=1)
             clfGB1 = GradientBoostingClassifier(n_estimators=n_est, max_depth=1)
@@ -264,8 +241,6 @@ def do_expr(X_all, y_all, name, report_dict):
                     if (dummy_test.shape[1] == 1) and (dummy_test.iloc[1]==0).bool():
                         dummy_test = np.concatenate((dummy_test, 1+dummy_test), axis=1)
                     data_discr_test = np.concatenate((data_discr_test, dummy_test), axis=1)
-            #print(data_discr.shape[1])
-            #print(data_discr_test.shape[1])
             
             used_n_est = len(D)
     
@@ -280,7 +255,6 @@ def do_expr(X_all, y_all, name, report_dict):
                     dummy = np.concatenate((dummy, 1-dummy), axis=1)
                 if (dummy.shape[1] == 1) and (dummy.iloc[1]==0).bool():
                     dummy = np.concatenate((dummy, 1+dummy), axis=1)
-                #print(dummy.shape)
                 data_discr = np.concatenate((data_discr, dummy), axis=1)
     
                 tmp_test = X_test[:,feature] > thres
@@ -301,9 +275,6 @@ def do_expr(X_all, y_all, name, report_dict):
                     
                 if t > 0:
                     theta_warm = np.zeros(data_discr.shape[1])
-                    #print(theta_warm.shape)
-                    #print(my_clf.theta.shape)
-                    #print(theta_warm[0:2*used_n_est+2*t].shape)
                     theta_warm[0:2*used_n_est+2*t] = my_clf.theta
                     theta = theta_warm
                     my_clf.fit(data_discr,y,theta)
@@ -367,23 +338,16 @@ def do_expr(X_all, y_all, name, report_dict):
     fig=plt.figure()
     ax=fig.add_subplot(111)
                          
-    #ax.errorbar(range(len(NEstimators)), acc_GB_train.mean(0), acc_GB_train.std(0), linestyle='--', c='b', marker='_',label='GBoost train')
     ax.errorbar(range(len(NEstimators)), acc_GB_test.mean(0), acc_GB_test.std(0), linestyle='--', c='b', marker="v",label='GBoost')
     
-    #ax.errorbar(range(len(NEstimators)), acc_cat_train.mean(0), acc_cat_train.std(0), linestyle='--', c='c', marker='_',label='CatB train')
     ax.errorbar(range(len(NEstimators)), acc_cat_test.mean(0), acc_cat_test.std(0), linestyle='--', c='c', marker="p",label='CatB')
     
-    #ax.errorbar(range(len(NEstimators)), acc_goss_train.mean(0), acc_goss_train.std(0), linestyle='--', c='y', marker='_',label='GOSS train')
     ax.errorbar(range(len(NEstimators)), acc_goss_test.mean(0), acc_goss_test.std(0), linestyle='--', c='y', marker="|",label='GOSS')
     
-    #ax.errorbar(range(len(NEstimators)), acc_OurGB_train.mean(0), acc_OurGB_train.std(0), linestyle='--', c='r', marker='_',label='VBW train')
     ax.errorbar(range(len(NEstimators)), acc_OurGB_test.mean(0), acc_OurGB_test.std(0), linestyle='--', c='r', marker="D",label='VBW')
     
-    #ax.errorbar(range(len(NEstimators)), acc_light_train.mean(0), acc_light_train.std(0), linestyle='--', c='g', marker='_',label='LightGBM train')
     ax.errorbar(range(len(NEstimators)), acc_light_test.mean(0), acc_light_test.std(0), linestyle='--', c='g', marker="x",label='LightGBM')
     
-    
-    #ax.errorbar(range(len(NEstimators)), acc_LR_train.mean(0), acc_LR_train.std(0), linestyle='--', c='m', marker='_',label='Averaged train')
     ax.errorbar(range(len(NEstimators)), acc_LR_train.mean(0), acc_LR_test.std(0), linestyle='--', c='m', marker="+",label='Averaged')
     
     
@@ -394,23 +358,9 @@ def do_expr(X_all, y_all, name, report_dict):
     plt.legend(loc=4)
     plt.savefig('Accuracy_soa_' + name + '.png')
     
-    
-    #d = {'col1': , 'col2': [3, 4]}
-    #df = pd.DataFrame(data=d)
-    
-    # Grouped Boxplot
-    #fig=plt.figure()
-    #ax=fig.add_subplot(111)
-    
-    #sns.boxplot(y='lifeExp', x='continent',
-    #data=df1,
-    #palette="colorblind",
-    #hue='year')
-
-
 
 use_multiprocessing = True
-db_path = 'Rudin'
+db_path = 'Data'
 db_cases = []
 for db_name in os.listdir(db_path):
     db_file = os.path.join(db_path, db_name)

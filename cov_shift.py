@@ -12,7 +12,6 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import KBinsDiscretizer
 from sklearn.svm import SVC, LinearSVC
 from sklearn.ensemble import GradientBoostingClassifier
-#from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
 from sklearn import mixture
 from sklearn.cluster import KMeans
@@ -47,7 +46,7 @@ class my_LogisticRegression:
         if self.fit_intercept:
             X = self.__add_intercept(X)
     
-        self.theta = theta #np.zeros(X.shape[1])
+        self.theta = theta
         ind = np.where(self.theta == 0)[0]
     
         for i in range(self.num_iter):
@@ -76,8 +75,6 @@ def do_expr(X_all, y_all, name, report_dict):
     print('Processing dataset: ' + name)    
     NMC = 10
     NEstimators = [1, 3, 7, 10, 20, 50, 100, 1000, 3000, 5000]
-    #NEstimators =  [1, 5, 10, 25, 50, 75, 100, 500, 1000, 5000, 7000, 10000, 15000, 30000, 50000]
-    #NEstimators = [5, 10]
     
     acc_GB_train = np.zeros((NMC,len(NEstimators)))
     acc_OurGB_train = np.zeros((NMC,len(NEstimators)))
@@ -88,15 +85,6 @@ def do_expr(X_all, y_all, name, report_dict):
     acc_LR_test = np.zeros((NMC,len(NEstimators)))
     
     for iMC in range(NMC):
-            
-        #ok
-        #X_all, y_all = make_classification(n_samples=100, n_features=100, n_redundant=30, n_informative=10, n_clusters_per_class=1,flip_y=0.3, shift = 0.)
-        
-        #ok
-        #X_all, y_all = make_blobs(n_samples=100, n_features=50, cluster_std=10.0, centers=2)
-        #X, y = make_blobs(n_samples=70, n_features=50, cluster_std=1.0, centers=2)
-        #X_test, y_test = make_blobs(n_samples=30, n_features=50, cluster_std=1.0, centers=2)
-    
         X, X_test, y, y_test = train_test_split(X_all, y_all, test_size=0.3)
         
         NClustersInTrain = (X.shape[0])//10
@@ -183,8 +171,6 @@ def do_expr(X_all, y_all, name, report_dict):
                     if (dummy_test.shape[1] == 1) and (dummy_test.iloc[1]==0).bool():
                         dummy_test = np.concatenate((dummy_test, 1+dummy_test), axis=1)
                     data_discr_test = np.concatenate((data_discr_test, dummy_test), axis=1)
-            #print(data_discr.shape[1])
-            #print(data_discr_test.shape[1])
            
             logreg = LogisticRegression(C=1e1,max_iter=20)
             logreg.fit(data_discr, y)
@@ -266,7 +252,7 @@ def do_expr(X_all, y_all, name, report_dict):
 
 
 use_multiprocessing = True
-db_path = 'Rudin'
+db_path = 'Data'
 db_cases = []
 for db_name in os.listdir(db_path):
     db_file = os.path.join(db_path, db_name)

@@ -1,7 +1,7 @@
 # Vanishing Boosted Weights (VBW): a Consistent Algorithm to Learn Interpretable Rules
 
 This Python package allows to reproduce the results presented in the paper "Vanishing Boosted Weights: a Consistent Algorithm to Learn Interpretable Rules". The potential users can run the new method on their own data.
-
+```
 usage: manager.py [-h] [-a ALGORITHM [ALGORITHM ...]] [-f FEATURES]
                   [-e ESTIMATORS [ESTIMATORS ...]] [-d DATA] [-p PROCESS]
 
@@ -21,5 +21,7 @@ optional arguments:
   -d DATA, --data DATA  Path to datasets (default: ./Examples)
   -p PROCESS, --process PROCESS
                         Number of processes (default: 4)
-
-
+```                        
+                        
+                       
+A dataset is a text file comprising of all the samples. Each sample is represented by a line of features separated by space. The last column is the class which is either 1 or -1. 

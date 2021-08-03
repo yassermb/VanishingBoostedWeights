@@ -26,13 +26,13 @@ optional arguments:
                         Number of processes (default: 4)
 ```
 
-The list of learning approaches are:
-GBoost : Gradient Boosting Decition Trees
-CatB : CatBoost Classifier
-GOSS : Gradient-Based One Side Sampling
-VBW : Vanishing Boosted Weights
-LightGBM : Light Gradient Boosting Machine
-Averaged : Corrective Federated Averaging VBW
+The list of learning approaches are:<br>
+GBoost : Gradient Boosting Decition Trees<br>
+CatB : CatBoost Classifier<br>
+GOSS : Gradient-Based One Side Sampling<br>
+VBW : Vanishing Boosted Weights<br>
+LightGBM : Light Gradient Boosting Machine<br>
+Averaged : Corrective Federated Averaging VBW<br>
 
 
 Below is an example of using the package:

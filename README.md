@@ -24,7 +24,16 @@ optional arguments:
   -d DATA, --data DATA  Path to datasets (default: ./Examples)
   -p PROCESS, --process PROCESS
                         Number of processes (default: 4)
-```                        
+```
+
+The list of learning approaches are:
+GBoost : Gradient Boosting Decition Trees
+CatB : CatBoost Classifier
+GOSS : Gradient-Based One Side Sampling
+VBW : Vanishing Boosted Weights
+LightGBM : Light Gradient Boosting Machine
+Averaged : Corrective Federated Averaging VBW
+
 
 Below is an example of using the package:
 

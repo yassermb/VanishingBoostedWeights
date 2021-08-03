@@ -38,7 +38,7 @@ Averaged : Corrective Federated Averaging VBW<br>
 Below is an example of using the package:
 
 ```
-python3 manager.py -a VBW GBoost GOSS -f 10 -e 1 10 25 75 90 -d Examples -p 15 
+python3 manager.py -a VBW GBoost GOSS Averaged -f 10 -e 1 10 25 75 90 -d Examples -p 15 
 ```
 
                        

@@ -20,7 +20,6 @@ from catboost import CatBoostClassifier
 
 import warnings
 import time
-import os
 warnings.filterwarnings("ignore")
 
 class my_LogisticRegression:
@@ -69,11 +68,9 @@ class my_LogisticRegression:
         return self.predict_prob(X).round()
     
     
-def do_expr(X_all, y_all, name, report_dict):
+def do_expr(X_all, y_all, name, algorithms, NMC, NEstimators, report_dict):
     start_time = time.time()
-    print('Processing dataset: ' + name)
-    NMC = 10
-    NEstimators =  [1, 5, 10, 25, 50, 75, 100]
+    print('Processing dataset: ' + name + '\n')
     
     acc_GB_train = np.zeros((NMC,len(NEstimators)))
     acc_light_train = np.zeros((NMC,len(NEstimators)))
@@ -119,75 +116,78 @@ def do_expr(X_all, y_all, name, report_dict):
             clfGB1.fit(X,y)
             
             # sklearn
-            acc_GB_train[iMC,iNEst] =clfGB1.score(X, y)
-            acc_GB_test[iMC,iNEst] =clfGB1.score(X_test, y_test)
+            if 'GBoost' in algorithms:
+                acc_GB_train[iMC,iNEst] =clfGB1.score(X, y)
+                acc_GB_test[iMC,iNEst] =clfGB1.score(X_test, y_test)
             
             # light
-            train_data = lightgbm.Dataset(X, label=y)
-            test_data  = lightgbm.Dataset(X_test, label=y_test)
-            parameters = {
-                'application': 'binary',
-                'metric': 'binary_logloss',
-                'n_estimators': n_est,
-                'boosting': 'gbdt',
-                'num_leaves': 2,
-                'learning_rate': 0.05,
-                'verbose': -1
-                
-            }
-            model = lightgbm.train(parameters,
-                                   train_data,
-                                   valid_sets=test_data)
-            preds = model.predict(X)
-            y_pred = np.zeros((X.shape[0]))
-            y_pred[preds>=.5] = 1
-            acc_light_train[iMC,iNEst] = ((y == y_pred).mean())
-            preds = model.predict(X_test)
-            y_pred = np.zeros((X_test.shape[0]))
-            y_pred[preds>=.5] = 1
-            acc_light_test[iMC,iNEst] = ((y_pred == y_test).mean())
+            if 'LightGBM' in algorithms:
+                train_data = lightgbm.Dataset(X, label=y)
+                test_data  = lightgbm.Dataset(X_test, label=y_test)
+                parameters = {
+                    'application': 'binary',
+                    'metric': 'binary_logloss',
+                    'n_estimators': n_est,
+                    'boosting': 'gbdt',
+                    'num_leaves': 2,
+                    'learning_rate': 0.05,
+                    'verbose': -1
+                    
+                }
+                model = lightgbm.train(parameters,
+                                       train_data,
+                                       valid_sets=test_data)
+                preds = model.predict(X)
+                y_pred = np.zeros((X.shape[0]))
+                y_pred[preds>=.5] = 1
+                acc_light_train[iMC,iNEst] = ((y == y_pred).mean())
+                preds = model.predict(X_test)
+                y_pred = np.zeros((X_test.shape[0]))
+                y_pred[preds>=.5] = 1
+                acc_light_test[iMC,iNEst] = ((y_pred == y_test).mean())
             
             # GOSS
-            train_data = lightgbm.Dataset(X, label=y)
-            test_data  = lightgbm.Dataset(X_test, label=y_test)
-            parameters = {
-                'application': 'binary',
-                'metric': 'binary_logloss',
-                'n_estimators': n_est,
-                'boosting': 'goss',
-                'num_leaves': 2,
-                'learning_rate': 0.05,
-                'verbose': -1
-               
-            }
-            model = lightgbm.train(parameters,
-                                   train_data,
-                                   valid_sets=test_data)
-            preds = model.predict(X)
-            y_pred = np.zeros((X.shape[0]))
-            y_pred[preds>=.5] = 1
-            acc_goss_train[iMC,iNEst] = ((y == y_pred).mean())
-            preds = model.predict(X_test)
-            y_pred = np.zeros((X_test.shape[0]))
-            y_pred[preds>=.5] = 1
-            acc_goss_test[iMC,iNEst] = ((y_pred == y_test).mean())
+            if 'GOSS' in algorithms:
+                train_data = lightgbm.Dataset(X, label=y)
+                test_data  = lightgbm.Dataset(X_test, label=y_test)
+                parameters = {
+                    'application': 'binary',
+                    'metric': 'binary_logloss',
+                    'n_estimators': n_est,
+                    'boosting': 'goss',
+                    'num_leaves': 2,
+                    'learning_rate': 0.05,
+                    'verbose': -1
+                   
+                }
+                model = lightgbm.train(parameters,
+                                       train_data,
+                                       valid_sets=test_data)
+                preds = model.predict(X)
+                y_pred = np.zeros((X.shape[0]))
+                y_pred[preds>=.5] = 1
+                acc_goss_train[iMC,iNEst] = ((y == y_pred).mean())
+                preds = model.predict(X_test)
+                y_pred = np.zeros((X_test.shape[0]))
+                y_pred[preds>=.5] = 1
+                acc_goss_test[iMC,iNEst] = ((y_pred == y_test).mean())
             
             # CatBoostClassifier
-            model = CatBoostClassifier(learning_rate=0.05,
-                                    eval_metric='Accuracy',n_estimators=n_est,max_depth=1,verbose=False)
-            model.fit(X,y)
-            preds = model.predict(X)
-            y_pred = np.zeros((X.shape[0]))
-            y_pred[preds>=.5] = 1
-            acc_cat_train[iMC,iNEst] = ((y == y_pred).mean())
-            preds = model.predict(X_test)
-            y_pred = np.zeros((X_test.shape[0]))
-            y_pred[preds>=.5] = 1
-            acc_cat_test[iMC,iNEst] = ((y_pred == y_test).mean())
+            if 'CatB' in algorithms:
+                model = CatBoostClassifier(learning_rate=0.05,
+                                        eval_metric='Accuracy',n_estimators=n_est,max_depth=1,verbose=False)
+                model.fit(X,y)
+                preds = model.predict(X)
+                y_pred = np.zeros((X.shape[0]))
+                y_pred[preds>=.5] = 1
+                acc_cat_train[iMC,iNEst] = ((y == y_pred).mean())
+                preds = model.predict(X_test)
+                y_pred = np.zeros((X_test.shape[0]))
+                y_pred[preds>=.5] = 1
+                acc_cat_test[iMC,iNEst] = ((y_pred == y_test).mean())
     
             
             D = set()
-    
             n_classes, n_estimators = clfGB.estimators_.shape
             for c in range(n_classes):
                 for t in range(n_estimators):
@@ -357,37 +357,3 @@ def do_expr(X_all, y_all, name, report_dict):
                          
     plt.legend(loc=4)
     plt.savefig('Accuracy_soa_' + name + '.png')
-    
-
-use_multiprocessing = True
-db_path = 'Data'
-db_cases = []
-for db_name in os.listdir(db_path):
-    db_file = os.path.join(db_path, db_name)
-    db_df = pandas.read_table(db_file, sep = ' ', error_bad_lines=False, header = None).sample(frac=1)
-    y_all = (db_df.iloc[:,-1].to_numpy() + 1) // 2
-    X_all = db_df.drop(db_df.columns[-1],axis=1).to_numpy()    
-    
-    db_cases.append((X_all, y_all, db_name.replace('.txt','')))
-
-if use_multiprocessing:
-    import multiprocessing
-    max_cpus = 30
-    manager = multiprocessing.Manager()
-    report_dict = manager.dict()
-    pool = multiprocessing.Pool(processes = min(max_cpus, multiprocessing.cpu_count()))
-else:
-    report_dict = dict()
-
-for args in db_cases:
-    args += (report_dict,)
-    if use_multiprocessing:
-        pool.apply_async(do_expr, args = args)
-    else:
-        do_expr(*args)
-
-if use_multiprocessing:
-    pool.close()
-    pool.join()
-    
-print(dict(report_dict))

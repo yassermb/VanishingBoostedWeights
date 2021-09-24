@@ -1,4 +1,4 @@
-# Vanishing Boosted Weights (VBW): A Consistent Algorithm to Learn Interpretable Rules
+##### Source code for the paper: [Vanishing Boosted Weights (VBW): A Consistent Algorithm to Learn Interpretable Rules](https://www.sciencedirect.com/science/article/pii/S0167865521003081)
 
 ![](figureIntuition.png?raw=true "figureIntuition")
 
